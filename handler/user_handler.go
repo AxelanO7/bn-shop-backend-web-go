@@ -38,7 +38,7 @@ func CreateUser(c *fiber.Ctx) error {
 func GetAllUsers(c *fiber.Ctx) error {
 	db := database.DB.Db
 	users := []model.User{}
-	if err := db.Find(users).Error; err != nil {
+	if err := db.Find(&users).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get users", "data": err})
 	}
 	// if no user found, return an error

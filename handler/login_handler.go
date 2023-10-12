@@ -38,7 +38,7 @@ func CreateLogin(c *fiber.Ctx) error {
 func GetAllLogins(c *fiber.Ctx) error {
 	db := database.DB.Db
 	logins := []model.Login{}
-	if err := db.Find(logins).Error; err != nil {
+	if err := db.Find(&logins).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get logins", "data": err})
 	}
 	// if no login found, return an error

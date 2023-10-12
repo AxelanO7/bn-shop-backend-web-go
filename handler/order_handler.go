@@ -48,7 +48,9 @@ func GetAllOrders(c *fiber.Ctx) error {
 	db := database.DB.Db
 	orders := []model.Order{}
 	// find all orders in the database
-	db.Find(orders)
+	if err := db.Find(&orders).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get orders", "data": err})
+	}
 	// if no order found, return an error
 	if len(orders) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Orders not found", "data": nil})

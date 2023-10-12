@@ -38,7 +38,7 @@ func CreateSupplier(c *fiber.Ctx) error {
 func GetAllSuppliers(c *fiber.Ctx) error {
 	db := database.DB.Db
 	suppliers := []model.Supplier{}
-	if err := db.Find(suppliers).Error; err != nil {
+	if err := db.Find(&suppliers).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get suppliers", "data": err})
 	}
 	// if no supplier found, return an error

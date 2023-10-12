@@ -48,7 +48,9 @@ func GetAllDetailInputs(c *fiber.Ctx) error {
 	db := database.DB.Db
 	detailInputs := []model.DetailInput{}
 	// find all detail inputs in the database
-	db.Find(detailInputs)
+	if err := db.Find(&detailInputs).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detail inputs", "data": err})
+	}
 	// if no detail input found, return an error
 	if len(detailInputs) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Detail inputs not found", "data": nil})

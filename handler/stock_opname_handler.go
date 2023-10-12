@@ -38,7 +38,7 @@ func CreateStockOpname(c *fiber.Ctx) error {
 func GetAllStockOpnames(c *fiber.Ctx) error {
 	db := database.DB.Db
 	stockOpnames := []model.StockOpname{}
-	if err := db.Find(stockOpnames).Error; err != nil {
+	if err := db.Find(&stockOpnames).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get stockOpnames", "data": err})
 	}
 	// if no stockOpname found, return an error

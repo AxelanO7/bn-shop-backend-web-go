@@ -48,7 +48,9 @@ func GetAllDetailOutputs(c *fiber.Ctx) error {
 	db := database.DB.Db
 	detailOutputs := []model.DetailOutput{}
 	// find all detail outputs in the database
-	db.Find(detailOutputs)
+	if err := db.Find(&detailOutputs).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detail outputs", "data": err})
+	}
 	// if no detail output found, return an error
 	if len(detailOutputs) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Detail outputs not found", "data": nil})
