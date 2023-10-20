@@ -8,7 +8,7 @@ import (
 type DetailInput struct {
 	gorm.Model
 	IdInput     int    `json:"id_input"`
-	Input       Input  `gorm:"foreignKey:InputID" json:"input"`
+	Input       Input  `gorm:"foreignKey:IdInput" json:"input"`
 	NameRaw     string `json:"name_raw"`
 	UnitProduct string `json:"unit_product"`
 	TotalUsed   int    `json:"total_used"`

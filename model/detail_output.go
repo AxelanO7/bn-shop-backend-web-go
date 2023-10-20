@@ -8,7 +8,7 @@ import (
 type DetailOutput struct {
 	gorm.Model
 	IdOutput           int    `json:"id_output"`
-	Output             Output `gorm:"foreignKey:OutputID" json:"output"`
+	Output             Output `gorm:"foreignKey:IdOutput" json:"output"`
 	NameProductOutput  string `json:"name_product_output"`
 	UnitProduct        string `json:"unit_product"`
 	TotalProductOutput int    `json:"total_product_output"`
