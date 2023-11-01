@@ -4,6 +4,8 @@ go 1.21.1
 
 require gorm.io/driver/postgres v1.5.3
 
+require github.com/go-sql-driver/mysql v1.7.0 // indirect
+
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/gofiber/fiber/v2 v2.49.2 // indirect
@@ -26,5 +28,6 @@ require (
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
+	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5 // indirect
 )

@@ -101,3 +101,30 @@ func DeleteLogin(c *fiber.Ctx) error {
 	// return success message
 	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Login deleted"})
 }
+
+// find login by username and password
+func findLoginByUsernameAndPassword(username string, password string, login *model.Login) error {
+	db := database.DB.Db
+	// find single login in the database by id
+	db.Find(&login, "username = ? AND password = ?", username, password)
+	// if no login found, return an error
+	if login.ID == 0 {
+		return fiber.ErrNotFound
+	}
+	return nil
+}
+
+// login a login in db
+func Login(c *fiber.Ctx) error {
+	login := new(model.Login)
+	// store the body in the login and return error if encountered
+	if err := c.BodyParser(login); err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
+	}
+	// find single login in the database by ids
+	if err := findLoginByUsernameAndPassword(login.Username, login.Password, login); err != nil {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Username or Password is wrong"})
+	}
+	// return the login
+	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Login Success"})
+}
