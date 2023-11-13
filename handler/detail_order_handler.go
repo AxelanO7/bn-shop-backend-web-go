@@ -43,6 +43,31 @@ func CreateDetailOrder(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail order has created", "data": detailOrder})
 }
 
+// create multiple detail orders
+func CreateMultipleDetailOrders(c *fiber.Ctx) error {
+	db := database.DB.Db
+	detailOrders := new([]model.DetailOrder)
+	// store the body in the detail orders and return error if encountered
+	if err := c.BodyParser(detailOrders); err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
+	}
+	for _, detailOrder := range *detailOrders {
+		order := new(model.Order)
+		// find order in the database by id
+		if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
+		}
+		// assign order to detail order
+		detailOrder.Order = *order
+		// create detail order
+		if err := db.Create(&detailOrder).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create detail order", "data": err})
+		}
+	}
+	// return the created detail orders
+	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail orders has created", "data": detailOrders})
+}
+
 // get all detail orders from db
 func GetAllDetailOrders(c *fiber.Ctx) error {
 	db := database.DB.Db
