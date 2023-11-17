@@ -223,3 +223,31 @@ func DeleteDetailOrder(c *fiber.Ctx) error {
 	// return the deleted detail order
 	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Detail order has deleted", "data": detailOrder})
 }
+
+// update multiple detail orders
+func UpdateMultipleDetailOrders(c *fiber.Ctx) error {
+	db := database.DB.Db
+	detailOrders := new([]model.DetailOrder)
+	// get id params
+	id := c.Params("id")
+	// store the body in the detail orders and return error if encountered
+	if err := c.BodyParser(detailOrders); err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
+	}
+
+	for _, detailOrder := range *detailOrders {
+		order := new(model.Order)
+		// find  order in the database by id
+		if err := findOrderById(fmt.Sprint(id), order); err != nil {
+			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
+		}
+		// assign  order to detail order
+		detailOrder.Order = *order
+		// update detail order
+		if err := db.Save(&detailOrder).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update detail order", "data": err})
+		}
+	}
+	// return the updated detail orders
+	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Detail orders has updated", "data": detailOrders})
+}
