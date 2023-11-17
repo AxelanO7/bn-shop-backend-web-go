@@ -51,6 +51,7 @@ func CreateMultipleDetailOrders(c *fiber.Ctx) error {
 	if err := c.BodyParser(detailOrders); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
+
 	for _, detailOrder := range *detailOrders {
 		order := new(model.Order)
 		// find order in the database by id
@@ -126,13 +127,13 @@ func GetAllDetailOrdersByOrder(c *fiber.Ctx) error {
 
 // get all order by start date and end date from db
 func GetOrderByDate(c *fiber.Ctx) error {
+	// return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Detail orders Found"})
 	db := database.DB.Db
 	detailOrders := []model.DetailOrder{}
 	// get start date params
 	dateStart := c.Params("date-start")
 	// get end date params
 	dateEnd := c.Params("date-end")
-	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Detail orders Found", "data": dateStart + " " + dateEnd})
 	// find all detail orders in the database by id
 	if err := db.Find(&detailOrders, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detail orders", "data": err})

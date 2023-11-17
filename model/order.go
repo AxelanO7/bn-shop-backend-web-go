@@ -7,6 +7,7 @@ import (
 // Order struct
 type Order struct {
 	gorm.Model
+	PurchaseOrder   string   `json:"purchase_order" gorm:"uniqueIndex:idx_purchase_order"`
 	DateTransaction string   `json:"date_transaction"`
 	IdSupplier      int      `json:"id_supplier"`
 	Supplier        Supplier `gorm:"foreignKey:IdSupplier" json:"supplier"`

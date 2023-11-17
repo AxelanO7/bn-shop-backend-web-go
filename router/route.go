@@ -94,7 +94,8 @@ func SetupRoutes(app *fiber.App) {
 
 	detailOrder.Get("/order/:id", handler.GetAllDetailOrdersByOrder)
 	detailOrder.Get("/order/:date-start/:date-end", handler.GetOrderByDate)
-	// detailOrder.Get("/:date-start/:date-end", handler.GetOrderByDate)
+	// handle multiple post
+	detailOrder.Post("/create-multiple", handler.CreateMultipleDetailOrders)
 
 	// stock
 	stock := api.Group("/stock")
