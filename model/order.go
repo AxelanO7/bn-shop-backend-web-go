@@ -12,6 +12,7 @@ type Order struct {
 	IdSupplier      int      `json:"id_supplier"`
 	Supplier        Supplier `gorm:"foreignKey:IdSupplier" json:"supplier"`
 	TypeTransaction string   `json:"type_transaction"`
+	Status          int      `json:"status"`
 }
 
 // Orders struct
