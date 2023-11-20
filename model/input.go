@@ -7,8 +7,9 @@ import (
 // Input struct
 type Input struct {
 	gorm.Model
+	NoInput         string `json:"no_input"`
 	DateInput       string `json:"date_input"`
-	CodeProduct     int    `json:"code_product"`
+	CodeProduct     string `json:"code_product"`
 	NameProduct     string `json:"name_product"`
 	TypeProduct     string `json:"type_product"`
 	TotalProduction int    `json:"total_production"`

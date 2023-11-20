@@ -7,6 +7,7 @@ import (
 // Output struct
 type Output struct {
 	gorm.Model
+	NoOutput   string `json:"no_output"`
 	DateOutput string `json:"date_output"`
 }
 

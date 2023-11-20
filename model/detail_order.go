@@ -14,7 +14,7 @@ type DetailOrder struct {
 	UnitProduct  string  `json:"unit_product"`
 	TypeProduct  string  `json:"type_product"`
 	PriceProduct int     `json:"price_product"`
-	TotalOrder   float64 `json:"total_order"`
+	TotalOrder   float64 `json:"total_product"`
 }
 
 // General Carts struct

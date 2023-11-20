@@ -13,7 +13,6 @@ type Order struct {
 	Supplier        Supplier `gorm:"foreignKey:IdSupplier" json:"supplier"`
 	TypeTransaction string   `json:"type_transaction"`
 	Status          int      `json:"status"`
-	IsConfirm       bool     `json:"is_confirm"`
 }
 
 // Orders struct
