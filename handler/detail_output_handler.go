@@ -161,3 +161,36 @@ func CreateMultipleDetailOutputs(c *fiber.Ctx) error {
 	// return the created detail outputs
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail outputs has created", "data": detailOutputs})
 }
+
+// remove multiple stock from detail output
+func RemoveMultipleStockFromDetailOutput(c *fiber.Ctx) error {
+	db := database.DB.Db
+	detailOutputs := new([]model.DetailOutput)
+	stocks := []model.Stock{}
+	// store the body in the detail outputs and return error if encountered
+	if err := c.BodyParser(detailOutputs); err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your detail outputs", "data": err})
+	}
+	// if no stock found, return an error
+	if err := db.Find(&stocks).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Stocks not found", "data": nil})
+	}
+	// if no stock found, return an error
+	if len(stocks) == 0 {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Stocks not found", "data": nil})
+	}
+	for _, detailOutput := range *detailOutputs {
+		// remove total product from stock
+		for _, stock := range stocks {
+			if stock.CodeProduct == detailOutput.CodeProduct {
+				stock.TotalProduct -= detailOutput.TotalUsed
+				// update stock
+				if err := db.Save(&stock).Error; err != nil {
+					return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update stock", "data": err})
+				}
+			}
+		}
+	}
+	// return the created detail outputs
+	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail outputs has created", "data": detailOutputs})
+}

@@ -1,4 +1,3 @@
-
 package model
 
 import (
@@ -8,9 +7,8 @@ import (
 // StockOpname struct
 type StockOpname struct {
 	gorm.Model
-	DateCalculate string `json:"date_calculate"`
-	NameProduct   string `json:"name_product"`
-	StockReal     int    `json:"stock_real"`
+	DateCalculate   string `json:"date_calculate"`
+	CodeStockOpname string `json:"code_stock_opname"`
 }
 
 // StockOpnames struct

@@ -6,18 +6,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// find stockOpname by id
-func findStockOpnameById(id string, stockOpname *model.StockOpname) error {
-	db := database.DB.Db
-	// find single stockOpname in the database by id
-	db.Find(&stockOpname, "id = ?", id)
-	// if no stockOpname found, return an error
-	if stockOpname.ID == 0 {
-		return fiber.ErrNotFound
-	}
-	return nil
-}
-
 // create a stockOpname
 func CreateStockOpname(c *fiber.Ctx) error {
 	db := database.DB.Db
@@ -100,4 +88,16 @@ func DeleteStockOpname(c *fiber.Ctx) error {
 	}
 	// return success message
 	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "StockOpname deleted"})
+}
+
+// find stockOpname by id
+func findStockOpnameById(id string, stockOpname *model.StockOpname) error {
+	db := database.DB.Db
+	// find single stockOpname in the database by id
+	db.Find(&stockOpname, "id = ?", id)
+	// if no stockOpname found, return an error
+	if stockOpname.ID == 0 {
+		return fiber.ErrNotFound
+	}
+	return nil
 }

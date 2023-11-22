@@ -161,3 +161,36 @@ func CreateMultipleDetailInputs(c *fiber.Ctx) error {
 	// return the created detail inputs
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail inputs has created", "data": detailInputs})
 }
+
+// remove multiple stock from detail input
+func RemoveMultipleStockFromDetailInput(c *fiber.Ctx) error {
+	db := database.DB.Db
+	detailInputs := new([]model.DetailInput)
+	stocks := []model.Stock{}
+	// store the body in the detail inputs and return error if encountered
+	if err := c.BodyParser(detailInputs); err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
+	}
+	// find all stocks in the database
+	if err := db.Find(&stocks, "type_product = ?", "Bahan Baku").Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get stocks", "data": err})
+	}
+	// if no stock found, return an error
+	if len(stocks) == 0 {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Stocks not found", "data": nil})
+	}
+	for _, detailInput := range *detailInputs {
+		// remove total product from stock
+		for _, stock := range stocks {
+			if stock.CodeProduct == detailInput.CodeProduct {
+				stock.TotalProduct -= detailInput.TotalUsed
+				// update stock
+				if err := db.Save(&stock).Error; err != nil {
+					return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update stock", "data": err})
+				}
+			}
+		}
+	}
+	// return the updated detail inputs
+	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Detail inputs has updated", "data": detailInputs})
+}

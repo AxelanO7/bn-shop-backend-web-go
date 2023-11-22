@@ -59,6 +59,7 @@ func SetupRoutes(app *fiber.App) {
 	detailInputs := api.Group("/detail-inputs")
 	// routes
 	detailInputs.Post("/", handler.CreateMultipleDetailInputs)
+	detailInputs.Put("/", handler.RemoveMultipleStockFromDetailInput)
 
 	// output
 	output := api.Group("/output")
@@ -81,6 +82,7 @@ func SetupRoutes(app *fiber.App) {
 	detailOutputs := api.Group("/detail-outputs")
 	// routes
 	detailOutputs.Post("/", handler.CreateMultipleDetailOutputs)
+	detailOutputs.Put("/", handler.RemoveMultipleStockFromDetailOutput)
 
 	// order
 	order := api.Group("/order")
@@ -130,4 +132,9 @@ func SetupRoutes(app *fiber.App) {
 	stockOpname.Post("/", handler.CreateStockOpname)
 	stockOpname.Put("/:id", handler.UpdateStockOpname)
 	stockOpname.Delete("/:id", handler.DeleteStockOpname)
+
+	stockOpnames := api.Group("/stock-opnames")
+	// routes
+	stockOpnames.Post("/", handler.CreateMultipleStockOpnames)
+	stockOpnames.Put("/", handler.RemoveMultipleStockFromStockOpname)
 }
