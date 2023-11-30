@@ -93,6 +93,13 @@ func SetupRoutes(app *fiber.App) {
 	order.Put("/:id", handler.UpdateOrder)
 	order.Delete("/:id", handler.DeleteOrder)
 
+	date := api.Group("/date")
+	date.Get("/order", handler.GetOrderByDate)
+	date.Get("/stock", handler.GetStockByDate)
+	date.Get("/input", handler.GetInputByDate)
+	date.Get("/output", handler.GetOutputByDate)
+	date.Get("/opname", handler.GetOpnameByDate)
+
 	// detail order
 	detailOrder := api.Group("/detail-order")
 	// routes

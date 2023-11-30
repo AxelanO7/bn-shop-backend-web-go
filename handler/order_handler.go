@@ -136,3 +136,33 @@ func DeleteOrder(c *fiber.Ctx) error {
 	// return deleted order
 	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Order deleted"})
 }
+
+// get all order by start date and end date from db
+func GetOrderByDate(c *fiber.Ctx) error {
+	db := database.DB.Db
+	detailOrders := []model.DetailOrder{}
+	dateStart := c.Query("date-start")
+	dateEnd := c.Query("date-end")
+
+	// find all detail orders in the database by date
+	if err := db.Find(&detailOrders, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detail orders", "data": err})
+	}
+	// if no detail order found, return an error
+	if len(detailOrders) == 0 {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Detail orders not found", "data": nil})
+	}
+	responseDetailOrders := []model.DetailOrder{}
+	for _, detailOrder := range detailOrders {
+		order := new(model.Order)
+		// find  order in the database by date
+		if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
+		}
+		// assign  order to detail order
+		detailOrder.Order = *order
+		responseDetailOrders = append(responseDetailOrders, detailOrder)
+	}
+	// return detail orders
+	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Detail orders Found", "data": detailOrders})
+}

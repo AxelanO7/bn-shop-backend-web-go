@@ -13,8 +13,8 @@ type DetailOpname struct {
 	NameFinished string      `json:"name_finished"`
 	UnitProduct  string      `json:"unit_product"`
 	TypeProduct  string      `json:"type_product"`
-	PriceUnit    int         `json:"price_unit"`
-	StockSystem  int         `json:"stock_system"`
+	PriceUnit    float64     `json:"price_unit"`
+	StockSystem  float64     `json:"stock_system"`
 	StockReal    float64     `json:"stock_real"`
 	TotalDiff    float64     `json:"total_diff"`
 }

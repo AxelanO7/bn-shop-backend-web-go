@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/AxelanO7/bn-shop-backend-web-go/database"
 	"github.com/AxelanO7/bn-shop-backend-web-go/model"
 	"github.com/gofiber/fiber/v2"
@@ -174,6 +176,26 @@ func GetAllRaw(c *fiber.Ctx) error {
 	stocks := []model.Stock{}
 	// find all stocks in the database
 	if err := db.Find(&stocks, "type_product = ?", "Bahan Baku").Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get stocks", "data": err})
+	}
+	// if no stock found, return an error
+	if len(stocks) == 0 {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Stocks not found", "data": nil})
+	}
+	// return stocks
+	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Stocks Found", "data": stocks})
+}
+
+func GetStockByDate(c *fiber.Ctx) error {
+	db := database.DB.Db
+	stocks := []model.Stock{}
+	dateStart := c.Query("date-start")
+	dateEnd := c.Query("date-end")
+
+	fmt.Println(dateStart, dateEnd)
+
+	// find all stocks in the database
+	if err := db.Find(&stocks, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get stocks", "data": err})
 	}
 	// if no stock found, return an error
