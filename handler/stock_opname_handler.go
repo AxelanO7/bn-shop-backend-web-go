@@ -107,11 +107,10 @@ func findStockOpnameById(id string, stockOpname *model.StockOpname) error {
 func GetOpnameByDate(c *fiber.Ctx) error {
 	db := database.DB.Db
 	detailOpnames := []model.DetailOpname{}
-	dateStart := c.Query("date-start")
-	dateEnd := c.Query("date-end")
+	date := c.Query("date")
 
 	// find all detailStocks in the database
-	if err := db.Find(&detailOpnames, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
+	if err := db.Find(&detailOpnames, "created_at BETWEEN ? AND ?", date+" 00:00:00", date+" 23:59:59").Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detailStocks", "data": err})
 	}
 	// if no stockOpname found, return an error
