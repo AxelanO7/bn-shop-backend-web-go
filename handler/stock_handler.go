@@ -44,6 +44,10 @@ func CreateMultipleStocks(c *fiber.Ctx) error {
 	if err := c.BodyParser(stocks); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
+	// Error 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+	if err := db.Exec("SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;").Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not set transaction isolation level", "data": err})
+	}
 	// create stock
 	if err := db.Create(stocks).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create stocks", "data": err})

@@ -144,4 +144,9 @@ func SetupRoutes(app *fiber.App) {
 	// routes
 	stockOpnames.Post("/", handler.CreateMultipleStockOpnames)
 	stockOpnames.Put("/", handler.RemoveMultipleStockFromStockOpname)
+
+	// detail opname
+	detailOpname := api.Group("/detail-opname")
+	// routes
+	detailOpname.Get("/", handler.GetAllDetailOpnames)
 }

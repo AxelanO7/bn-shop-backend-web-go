@@ -8,6 +8,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// get all detail opnames
+func GetAllDetailOpnames(c *fiber.Ctx) error {
+	db := database.DB.Db
+	detailOpnames := []model.DetailOpname{}
+	// find all detail opnames in the database
+	if err := db.Find(&detailOpnames).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "DetailOpnames not found", "data": nil})
+	}
+	// if no detail opname found, return an error
+	if len(detailOpnames) == 0 {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "DetailOpnames not found", "data": nil})
+	}
+	// return detail opnames
+	return c.JSON(fiber.Map{"status": "success", "message": "All DetailOpnames", "data": detailOpnames})
+}
+
 // create multiple stockOpnames
 func CreateMultipleStockOpnames(c *fiber.Ctx) error {
 	db := database.DB.Db
