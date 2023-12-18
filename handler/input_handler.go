@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/AxelanO7/bn-shop-backend-web-go/database"
 	"github.com/AxelanO7/bn-shop-backend-web-go/model"
 	"github.com/gofiber/fiber/v2"
@@ -107,29 +105,18 @@ func DeleteInput(c *fiber.Ctx) error {
 
 func GetInputByDate(c *fiber.Ctx) error {
 	db := database.DB.Db
-	detailInputs := []model.DetailInput{}
+	inputs := []model.Input{}
 	dateStart := c.Query("date-start")
 	dateEnd := c.Query("date-end")
 
 	// find all detailInputs in the database
-	if err := db.Find(&detailInputs, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
+	if err := db.Find(&inputs, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detailInputs", "data": err})
 	}
 	// if no input found, return an error
-	if len(detailInputs) == 0 {
+	if len(inputs) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Inputs not found", "data": nil})
 	}
-	responseDetailInputs := []model.DetailInput{}
-	for _, detailInput := range detailInputs {
-		input := new(model.Input)
-		// find single input in the database by id
-		if err := findInputById(fmt.Sprint(detailInput.IdInput), input); err != nil {
-			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Input not found"})
-		}
-		// assign input to detailInput
-		detailInput.Input = *input
-		responseDetailInputs = append(responseDetailInputs, detailInput)
-	}
 	// return detailInputs
-	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Inputs Found", "data": responseDetailInputs})
+	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Inputs Found", "data": inputs})
 }

@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/AxelanO7/bn-shop-backend-web-go/database"
 	"github.com/AxelanO7/bn-shop-backend-web-go/model"
 	"github.com/gofiber/fiber/v2"
@@ -108,29 +106,18 @@ func DeleteOutput(c *fiber.Ctx) error {
 // find detailOutput by date
 func GetOutputByDate(c *fiber.Ctx) error {
 	db := database.DB.Db
-	detailOutputs := []model.DetailOutput{}
+	outputs := []model.Output{}
 	dateStart := c.Query("date-start")
 	dateEnd := c.Query("date-end")
 
 	// find all detailOutputs in the database by date
-	if err := db.Find(&detailOutputs, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get detailOutputs", "data": err})
+	if err := db.Find(&outputs, "created_at BETWEEN ? AND ?", dateStart, dateEnd).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get outputs", "data": err})
 	}
 	// if no detailOutput found, return an error
-	if len(detailOutputs) == 0 {
+	if len(outputs) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "DetailOutputs not found", "data": nil})
 	}
-	responseDetailOutputs := []model.DetailOutput{}
-	for _, detailOutput := range detailOutputs {
-		output := new(model.Output)
-		// find single output in the database by id
-		if err := findOutputById(fmt.Sprint(detailOutput.IdOutput), output); err != nil {
-			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Output not found"})
-		}
-		// assign output to detailOutput
-		detailOutput.Output = *output
-		responseDetailOutputs = append(responseDetailOutputs, detailOutput)
-	}
 	// return detailOutputs
-	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "DetailOutputs Found", "data": responseDetailOutputs})
+	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "DetailOutputs Found", "data": outputs})
 }
