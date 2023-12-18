@@ -125,6 +125,11 @@ func SetupRoutes(app *fiber.App) {
 	stock.Put("/:id", handler.UpdateStock)
 	stock.Delete("/:id", handler.DeleteStock)
 
+	// stocks
+	stocks := api.Group("/stocks")
+	// routes
+	stocks.Post("/", handler.CreateMultipleStocks)
+
 	paid := api.Group("/paid")
 	// routes
 	// paid.Get("/", handler.GetAllDetailOrdersByStatus)
