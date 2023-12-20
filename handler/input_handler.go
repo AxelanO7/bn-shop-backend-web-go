@@ -26,6 +26,12 @@ func CreateInput(c *fiber.Ctx) error {
 	if err := c.BodyParser(input); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
+	// find single input in the database by code product
+	db.Find(&input, "code_product = ?", input.CodeProduct)
+	// if input found, return an error
+	if input.ID != 0 {
+		return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Code product already exist", "data": nil})
+	}
 	// create input
 	if err := db.Create(input).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create input", "data": err})
