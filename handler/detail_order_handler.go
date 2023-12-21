@@ -9,7 +9,7 @@ import (
 )
 
 // find detail order by id
-func findDetailOrderById(id string, detailOrder *model.DetailOrder) error {
+func FindDetailOrderById(id string, detailOrder *model.DetailOrder) error {
 	db := database.DB.Db
 	// find single detail order in the database by id
 	db.Find(&detailOrder, "id = ?", id)
@@ -30,7 +30,7 @@ func CreateDetailOrder(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
 	// find order in the database by id
-	if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+	if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 	}
 	// assign order to detail order
@@ -55,15 +55,26 @@ func CreateMultipleDetailOrders(c *fiber.Ctx) error {
 	for _, detailOrder := range *detailOrders {
 		order := new(model.Order)
 		// find order in the database by id
-		if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+		if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
-		// assign order to detail order
-		detailOrder.Order = *order
-		// create detail order
-		if err := db.Create(&detailOrder).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create detail order", "data": err})
+		// add detail stock if exist
+		detailOrderExist := new(model.DetailOrder)
+		db.Find(&detailOrderExist, "code_product = ?", detailOrder.CodeProduct)
+		if detailOrderExist.ID != 0 {
+			detailOrderExist.TotalOrder += detailOrder.TotalOrder
+			detailOrder = *detailOrderExist
+			if err := db.Save(&detailOrderExist).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update detail order", "data": err})
+			}
+			continue
+		} else {
+			if err := db.Create(&detailOrder).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create detail order", "data": err})
+			}
 		}
+		// asign order to detail order
+		detailOrder.Order = *order
 	}
 	// return the created detail orders
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail orders has created", "data": detailOrders})
@@ -85,7 +96,7 @@ func GetAllDetailOrders(c *fiber.Ctx) error {
 	for _, detailOrder := range detailOrders {
 		order := new(model.Order)
 		// find  order in the database by id
-		if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+		if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
 		// assign  order to detail order
@@ -114,7 +125,7 @@ func GetAllDetailOrdersByOrder(c *fiber.Ctx) error {
 	for _, detailOrder := range detailOrders {
 		order := new(model.Order)
 		// find  order in the database by id
-		if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+		if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
 		// assign  order to detail order
@@ -132,11 +143,11 @@ func GetSingleDetailOrder(c *fiber.Ctx) error {
 	// get id params
 	id := c.Params("id")
 	// find single detail order in the database by id
-	if err := findDetailOrderById(id, detailOrder); err != nil {
+	if err := FindDetailOrderById(id, detailOrder); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Detail order not found"})
 	}
 	// find  order in the database by id
-	if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+	if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 	}
 	// assign  order to detail order
@@ -153,7 +164,7 @@ func UpdateDetailOrder(c *fiber.Ctx) error {
 	// get id params
 	id := c.Params("id")
 	// find single detail order in the database by id
-	if err := findDetailOrderById(id, detailOrder); err != nil {
+	if err := FindDetailOrderById(id, detailOrder); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Detail order not found"})
 	}
 	// store the body in the detail order and return error if encountered
@@ -161,7 +172,7 @@ func UpdateDetailOrder(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
 	// find  order in the database by id
-	if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+	if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 	}
 	// assign  order to detail order
@@ -181,7 +192,7 @@ func DeleteDetailOrder(c *fiber.Ctx) error {
 	// get id params
 	id := c.Params("id")
 	// find single detail order in the database by id
-	if err := findDetailOrderById(id, detailOrder); err != nil {
+	if err := FindDetailOrderById(id, detailOrder); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Detail order not found"})
 	}
 	// delete detail order
@@ -206,7 +217,7 @@ func UpdateMultipleDetailOrders(c *fiber.Ctx) error {
 	for _, detailOrder := range *detailOrders {
 		order := new(model.Order)
 		// find  order in the database by id
-		if err := findOrderById(fmt.Sprint(id), order); err != nil {
+		if err := FindOrderById(fmt.Sprint(id), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
 		// assign  order to detail order

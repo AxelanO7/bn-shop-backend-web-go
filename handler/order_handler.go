@@ -9,7 +9,7 @@ import (
 )
 
 // find order by id
-func findOrderById(id string, order *model.Order) error {
+func FindOrderById(id string, order *model.Order) error {
 	db := database.DB.Db
 	// find single order in the database by id
 	db.Find(&order, "id = ?", id)
@@ -77,7 +77,7 @@ func GetSingleOrder(c *fiber.Ctx) error {
 	// get id params
 	id := c.Params("id")
 	// find single order in the database by id
-	if err := findOrderById(id, order); err != nil {
+	if err := FindOrderById(id, order); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 	}
 	// find supplier in the database by id
@@ -98,7 +98,7 @@ func UpdateOrder(c *fiber.Ctx) error {
 	// get id params
 	id := c.Params("id")
 	// find single order in the database by id
-	if err := findOrderById(id, order); err != nil {
+	if err := FindOrderById(id, order); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 	}
 	// store the body in the order and return error if encountereds
@@ -126,7 +126,7 @@ func DeleteOrder(c *fiber.Ctx) error {
 	// get id params
 	id := c.Params("id")
 	// find single order in the database by id
-	if err := findOrderById(id, order); err != nil {
+	if err := FindOrderById(id, order); err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 	}
 	// delete order
@@ -156,7 +156,7 @@ func GetOrderByDate(c *fiber.Ctx) error {
 	for _, detailOrder := range detailOrders {
 		order := new(model.Order)
 		// find  order in the database by date
-		if err := findOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
+		if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
 		// assign  order to detail order

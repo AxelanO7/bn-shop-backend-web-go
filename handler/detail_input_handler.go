@@ -146,6 +146,7 @@ func CreateMultipleDetailInputs(c *fiber.Ctx) error {
 	if err := c.BodyParser(detailInputs); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
+
 	for _, detailInput := range *detailInputs {
 		// find input in the database by id
 		if err := findInputById(fmt.Sprint(detailInput.IdInput), input); err != nil {
@@ -153,9 +154,22 @@ func CreateMultipleDetailInputs(c *fiber.Ctx) error {
 		}
 		// assign input to detail input
 		detailInput.Input = *input
-		// create detail input
-		if err := db.Create(&detailInput).Error; err != nil {
-			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create detail input", "data": err})
+		detailInputExist := new(model.DetailInput)
+		// find detail input in the database by id
+		db.Find(&detailInputExist, "code_product = ?", detailInput.CodeProduct)
+		if detailInputExist.ID != 0 {
+			// update detail input
+			detailInputExist.TotalUsed += detailInput.TotalUsed
+			detailInput = *detailInputExist
+			if err := db.Save(&detailInputExist).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update detail input", "data": err})
+			}
+			continue
+		} else {
+			// create detail input
+			if err := db.Create(&detailInput).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create detail input", "data": err})
+			}
 		}
 	}
 	// return the created detail inputs
