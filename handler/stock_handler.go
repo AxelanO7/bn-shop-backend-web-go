@@ -28,9 +28,21 @@ func CreateStock(c *fiber.Ctx) error {
 	if err := c.BodyParser(stock); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
-	// create stock
-	if err := db.Create(stock).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create stock", "data": err})
+	stockExist := new(model.Stock)
+	// find single stock in the database by code product
+	db.Find(&stockExist, "code_product = ?", stock.CodeProduct)
+	// if stock found, return an error
+	if stockExist.ID != 0 {
+		stockExist.TotalProduct += stock.TotalProduct
+		stock = stockExist
+		if err := db.Save(stockExist).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update stock", "data": err})
+		}
+	} else {
+		// create stock
+		if err := db.Create(stock).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create stock", "data": err})
+		}
 	}
 	// return the created stock
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Stock has created", "data": stock})
