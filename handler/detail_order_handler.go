@@ -63,6 +63,7 @@ func CreateMultipleDetailOrders(c *fiber.Ctx) error {
 		db.Find(&detailOrderExist, "code_product = ?", detailOrder.CodeProduct)
 		if detailOrderExist.ID != 0 {
 			detailOrderExist.TotalOrder += detailOrder.TotalOrder
+			detailOrderExist.IdOrder = detailOrder.IdOrder
 			detailOrder = *detailOrderExist
 			if err := db.Save(&detailOrderExist).Error; err != nil {
 				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update detail order", "data": err})
@@ -73,8 +74,6 @@ func CreateMultipleDetailOrders(c *fiber.Ctx) error {
 				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create detail order", "data": err})
 			}
 		}
-		// asign order to detail order
-		detailOrder.Order = *order
 	}
 	// return the created detail orders
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Detail orders has created", "data": detailOrders})
