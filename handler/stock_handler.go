@@ -60,9 +60,23 @@ func CreateMultipleStocks(c *fiber.Ctx) error {
 	if err := db.Exec("SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;").Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not set transaction isolation level", "data": err})
 	}
-	// create stock
-	if err := db.Create(stocks).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create stocks", "data": err})
+	stockExist := new(model.Stock)
+	for _, stock := range *stocks {
+		// find single stock in the database by code product
+		db.Find(&stockExist, "code_product = ?", stock.CodeProduct)
+		// if stock found, return an error
+		if stockExist.ID != 0 {
+			stockExist.TotalProduct += stock.TotalProduct
+			stock = *stockExist
+			if err := db.Save(stockExist).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not update stock", "data": err})
+			}
+		} else {
+			// create stock
+			if err := db.Create(&stock).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create stock", "data": err})
+			}
+		}
 	}
 	// return the created stock
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Stocks has created", "data": stocks})
