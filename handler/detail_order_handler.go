@@ -58,6 +58,7 @@ func CreateMultipleDetailOrders(c *fiber.Ctx) error {
 		if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
+		detailOrder.Order = *order
 		// add detail stock if exist
 		detailOrderExist := new(model.DetailOrder)
 		db.Find(&detailOrderExist, "code_product = ?", detailOrder.CodeProduct)
@@ -212,7 +213,6 @@ func UpdateMultipleDetailOrders(c *fiber.Ctx) error {
 	if err := c.BodyParser(detailOrders); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
-
 	for _, detailOrder := range *detailOrders {
 		order := new(model.Order)
 		// find  order in the database by id
