@@ -20,6 +20,9 @@ func SetupRoutes(app *fiber.App) {
 	login.Delete("/:id", handler.DeleteLogin)
 	login.Post("/login", handler.Login)
 
+	logout := api.Group("/logout")
+	logout.Post("/", handler.Logout)
+
 	// supplier
 	supplier := api.Group("/supplier")
 	// routes
@@ -37,6 +40,10 @@ func SetupRoutes(app *fiber.App) {
 	user.Post("/", handler.CreateUser)
 	user.Put("/:id", handler.UpdateUser)
 	user.Delete("/:id", handler.DeleteUser)
+
+	userLogin := api.Group("/user-login")
+	// routes
+	userLogin.Get("/", handler.GetLogedUser)
 
 	// input
 	input := api.Group("/input")

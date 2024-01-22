@@ -7,8 +7,10 @@ import (
 // StockOpname struct
 type StockOpname struct {
 	gorm.Model
-	DateCalculate   string `json:"date_calculate"`
-	CodeStockOpname string `json:"code_stock_opname"`
+	DateCalculate   string   `json:"date_calculate"`
+	CodeStockOpname string   `json:"code_stock_opname"`
+	IdSupplier      int      `json:"id_supplier"`
+	Supplier        Supplier `gorm:"foreignKey:IdSupplier" json:"supplier"`
 }
 
 // StockOpnames struct

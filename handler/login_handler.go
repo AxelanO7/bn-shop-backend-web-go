@@ -116,15 +116,35 @@ func findLoginByUsernameAndPassword(username string, password string, login *mod
 
 // login a login in db
 func Login(c *fiber.Ctx) error {
+	db := database.DB.Db
 	login := new(model.Login)
+	users := []model.User{}
 	// store the body in the login and return error if encountered
 	if err := c.BodyParser(login); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
 	}
-	// find single login in the database by ids
-	if err := findLoginByUsernameAndPassword(login.Username, login.Password, login); err != nil {
+	db.Find(&users)
+	for _, user := range users {
+		user.Status = 0
+		db.Save(&user)
+		if user.Username == login.Username && user.Password == login.Password {
+			user.Status = 1
+			db.Save(&user)
+			return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Login Success"})
+		}
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Username or Password is wrong"})
 	}
 	// return the login
 	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Login Success"})
+}
+
+func Logout(c *fiber.Ctx) error {
+	db := database.DB.Db
+	users := []model.User{}
+	db.Find(&users)
+	for _, user := range users {
+		user.Status = 0
+		db.Save(&user)
+	}
+	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Logout Success"})
 }

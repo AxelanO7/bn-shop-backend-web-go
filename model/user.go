@@ -10,6 +10,9 @@ type User struct {
 	gorm.Model
 	Name     string `json:"name_user"`
 	Position string `json:"position"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Status   int    `json:"status"`
 }
 
 // Users struct

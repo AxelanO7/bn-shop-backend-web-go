@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/AxelanO7/bn-shop-backend-web-go/database"
 	"github.com/AxelanO7/bn-shop-backend-web-go/model"
 	"github.com/gofiber/fiber/v2"
@@ -100,4 +102,31 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 	// return success message
 	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "User deleted"})
+}
+
+func GetLogedUser(c *fiber.Ctx) error {
+	db := database.DB.Db
+	users := []model.User{}
+	db.Find(&users)
+	if len(users) == 0 {
+		fmt.Println("users not found")
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Users not found", "data": nil})
+	}
+	if len(users) > 1 {
+		for i, user := range users {
+			if i > 0 {
+				user.Status = 0
+			}
+		}
+		db.Save(users)
+		return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Users Found", "data": users[0]})
+	} else {
+		for _, user := range users {
+			if user.Status == 1 {
+				return c.Status(200).JSON(fiber.Map{"status": "success", "message": "Users Found", "data": user})
+			}
+		}
+	}
+	fmt.Println("return")
+	return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Users not found", "data": nil})
 }
