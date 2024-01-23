@@ -133,7 +133,7 @@ func GetAllDetailOrdersByOrder(c *fiber.Ctx) error {
 		responseDetailOrders = append(responseDetailOrders, detailOrder)
 	}
 	// return detail orders
-	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Detail orders Found", "data": detailOrders})
+	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Detail orders Found", "data": responseDetailOrders})
 }
 
 // get single detail order from db
