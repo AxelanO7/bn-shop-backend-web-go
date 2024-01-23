@@ -124,12 +124,24 @@ func GetAllDetailOrdersByOrder(c *fiber.Ctx) error {
 	responseDetailOrders := []model.DetailOrder{}
 	for _, detailOrder := range detailOrders {
 		order := new(model.Order)
+		supplier := new(model.Supplier)
+		user := new(model.User)
 		// find  order in the database by id
 		if err := FindOrderById(fmt.Sprint(detailOrder.IdOrder), order); err != nil {
 			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Order not found"})
 		}
+		// find  supplier in the database by id
+		if err := findSupplierById(fmt.Sprint(order.IdSupplier), supplier); err != nil {
+			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Supplier not found"})
+		}
+		// find  user in the database by id
+		if err := findUserById(fmt.Sprint(order.IdUser), user); err != nil {
+			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "User not found"})
+		}
 		// assign  order to detail order
 		detailOrder.Order = *order
+		detailOrder.Order.Supplier = *supplier
+		detailOrder.Order.User = *user
 		responseDetailOrders = append(responseDetailOrders, detailOrder)
 	}
 	// return detail orders
