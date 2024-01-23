@@ -15,6 +15,8 @@ type Stock struct {
 	PriceProduct int      `json:"price_product"`
 	IdSupplier   int      `json:"id_supplier"`
 	Supplier     Supplier `gorm:"foreignKey:IdSupplier" json:"supplier"`
+	IdUser       int      `json:"id_user"`
+	User         User     `gorm:"foreignKey:IdUser" json:"user"`
 }
 
 // Stocks struct

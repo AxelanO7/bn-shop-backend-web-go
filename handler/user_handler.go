@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/AxelanO7/bn-shop-backend-web-go/database"
 	"github.com/AxelanO7/bn-shop-backend-web-go/model"
 	"github.com/gofiber/fiber/v2"
@@ -109,7 +107,6 @@ func GetLogedUser(c *fiber.Ctx) error {
 	users := []model.User{}
 	db.Find(&users)
 	if len(users) == 0 {
-		fmt.Println("users not found")
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Users not found", "data": nil})
 	}
 	if len(users) > 1 {
@@ -127,6 +124,5 @@ func GetLogedUser(c *fiber.Ctx) error {
 			}
 		}
 	}
-	fmt.Println("return")
 	return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Users not found", "data": nil})
 }

@@ -14,6 +14,8 @@ type Input struct {
 	TypeProduct  string `json:"type_product"`
 	TotalProduct int    `json:"total_product"`
 	PriceProduct int    `json:"price_product"`
+	IdUser       int    `json:"id_user"`
+	User         User   `gorm:"foreignKey:IdUser" json:"user"`
 }
 
 // Inputs struct

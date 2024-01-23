@@ -11,6 +11,8 @@ type StockOpname struct {
 	CodeStockOpname string   `json:"code_stock_opname"`
 	IdSupplier      int      `json:"id_supplier"`
 	Supplier        Supplier `gorm:"foreignKey:IdSupplier" json:"supplier"`
+	IdUser          int      `json:"id_user"`
+	User            User     `gorm:"foreignKey:IdUser" json:"user"`
 }
 
 // StockOpnames struct
