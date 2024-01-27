@@ -189,6 +189,7 @@ func DeleteStock(c *fiber.Ctx) error {
 func GetAllFinished(c *fiber.Ctx) error {
 	db := database.DB.Db
 	stocks := []model.Stock{}
+	suppliers := []model.Supplier{}
 	// find all stocks in the database
 	if err := db.Find(&stocks, "type_product = ?", "Barang Jadi").Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get stocks", "data": err})
@@ -197,6 +198,16 @@ func GetAllFinished(c *fiber.Ctx) error {
 	if len(stocks) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Stocks not found", "data": nil})
 	}
+	if err := db.Find(&suppliers).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get suppliers", "data": err})
+	}
+	for i, stock := range stocks {
+		for _, supplier := range suppliers {
+			if uint(stock.IdSupplier) == supplier.ID {
+				stocks[i].Supplier = supplier
+			}
+		}
+	}
 	// return stocks
 	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Stocks Found", "data": stocks})
 }
@@ -204,6 +215,7 @@ func GetAllFinished(c *fiber.Ctx) error {
 func GetAllRaw(c *fiber.Ctx) error {
 	db := database.DB.Db
 	stocks := []model.Stock{}
+	suppliers := []model.Supplier{}
 	// find all stocks in the database
 	if err := db.Find(&stocks, "type_product = ?", "Bahan Baku").Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get stocks", "data": err})
@@ -212,6 +224,17 @@ func GetAllRaw(c *fiber.Ctx) error {
 	if len(stocks) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Stocks not found", "data": nil})
 	}
+	if err := db.Find(&suppliers).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not get suppliers", "data": err})
+	}
+	for i, stock := range stocks {
+		for _, supplier := range suppliers {
+			if uint(stock.IdSupplier) == supplier.ID {
+				stocks[i].Supplier = supplier
+			}
+		}
+	}
+
 	// return stocks
 	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Stocks Found", "data": stocks})
 }
